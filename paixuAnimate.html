@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+    <style>
+        *{
+            padding: 0;
+            margin: 0;
+            list-style: none;
+        }
+        ul{
+            width: 1000px;
+            height: 500px;
+            border: 1px solid #CCCCCC;
+        }
+
+        li{
+            /*float:right;*/
+            /**/
+            position:absolute;
+            /*margin-right:5px;*/
+            background-color: pink;
+            text-align: center;
+            transition:all 0.3s ease 0s;
+        }
+
+    </style>
+</head>
+
+<body>
+
+<ul id = 'box1'></ul>
+
+
+<script>
+    var arr = [123,1,43,12,41,23412,1,23,41,34,1,34,123,4,14,1,34,1,234,342,1,234,341,2341,234,1,234,1234];
+    var box1 = document.getElementById('box1')
+    //添加li
+    for(var i = 0 ; i < arr.length; i++){
+        var li = document.createElement('li');
+        li.innerHTML = arr[i];
+        li.setAttribute('num',arr[i]);
+        box1.appendChild(li)
+    }
+
+    //计算宽高
+    var tWidth = 1000/arr.length - 5;
+    var arr2 = [];
+    for(var i = 0;i<arr.length;i++){
+        arr2[i] = arr[i]
+    }
+    var arr2 = arr2.sort(function(x,y){return x-y});
+    var obj = {};
+    for(var i = 0 ; i<arr2.length;i++){
+        obj[arr2[i]] = i;
+    }
+
+    //设置属性
+    var lis = document.getElementsByTagName('li');
+    for(var i = 0;i<lis.length;i++){
+        var num = lis[i].getAttribute('num');
+//        console.log(arr[i])
+//        console.log(obj[arr[i]] + 4)
+        var height = 400/(arr.length - 1)*(obj[arr[i]]+0.7)
+        lis[i].style.height = height + 'px';
+        lis[i].style.width = tWidth + 'px';
+        lis[i].style['margin-top'] = 500 - height + 'px';
+        lis[i].style.left = (tWidth+5)*i + 'px'
+    }
+
+
+    //排序
+    var liNode = box1.childNodes;
+    var setTime = 0;
+    paixu();
+    function paixu(){
+        if(setTime > arr.length){
+            return
+        }
+
+        var r = 0;
+        animate();
+        function animate(){
+            if(r >= arr.length-1 ){
+                setTime++;
+                console.log('setTime',setTime)
+                paixu()
+                return
+            }
+
+            if(arr[r] < arr[r+1]){
+                console.log('r',r)
+                var tmp;
+                tmp = arr[r];
+                arr[r] = arr[r+1];
+                arr[r+1] = tmp;
+                console.log(arr)
+                swapnode(lis[r],lis[r+1])
+                moveDom(lis[r+1],lis[r])
+                setTimeout(function(){
+                    r++
+                    animate();
+                },400)
+            }else{
+                r++
+                animate();
+            }
+        }
+    }
+
+    function moveDom(node1,node2){
+        node1.style.transition = 'left 0.3s ease 0s';
+        node2.style.transition = 'left 0.3s ease 0s';
+        var tmpLeft = getCss(node1,'left');
+        node1.style.left = getCss(node2,'left');
+        node2.style.left = tmpLeft;
+        return node1,node2
+    }
+
+//    console.log(liNode);
+    //定义通用的函数交换两个结点的位置
+    function swapnode(node1,node2){
+        console.log('swap===')
+        console.log(node1.getAttribute('num'),node2.getAttribute('num'));
+        //获取父结点
+        var _parent=node1.parentNode;
+        //获取两个结点的相对位置
+        var _t1=node1.nextSibling;
+        var _t2=node2.nextSibling;
+        //将node2插入到原来node1的位置
+        if(_t1)_parent.insertBefore(node2,_t1);
+        else _parent.appendChild(node2);
+        //将node1插入到原来node2的位置
+        if(_t2)_parent.insertBefore(node1,_t2);
+        else _parent.appendChild(node1);
+
+        return node1,node2
+    }
+
+    function getCss(node,style){
+        if(node.currentStyle){
+            return node.currentStyle[style];
+        }else{
+            return getComputedStyle(node,null)[style];
+        }
+    }
+
+
+
+</script>
+</body>
+</html>
